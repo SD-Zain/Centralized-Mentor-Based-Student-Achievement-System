@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusTrack | Student Achievement System</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f7fc;color:#243047}
+header{background:#142b50;color:white;padding:20px 6%;
+display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:23px;font-weight:bold}
+.logo span{color:#67b4ff}
+header small{color:#c6d6ed}
+.layout{display:flex;min-height:calc(100vh - 70px)}
+aside{width:245px;background:white;padding:25px 16px;
+border-right:1px solid #e5eaf2}
+aside h4{color:#8491a6;margin:10px 12px 18px;font-size:12px}
+nav button{display:block;width:100%;text-align:left;
+padding:13px;margin:5px 0;border:0;border-radius:8px;
+background:white;color:#45536b;font-size:14px;cursor:pointer}
+nav button:hover,nav button.active{background:#eaf2ff;color:#2163bd}
+main{flex:1;padding:30px;min-width:0}
+h1{font-size:27px;margin-bottom:9px}
+.sub{color:#77849a;margin-bottom:25px;font-size:14px}
+select,input,textarea{padding:12px;border:1px solid #dce3ed;
+border-radius:7px;background:white;width:100%;font-size:14px}
+button.primary{background:#2468c5;color:white;border:0;
+padding:11px 17px;border-radius:7px;cursor:pointer}
+button.primary:hover{background:#174f9c}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);
+gap:17px;margin:24px 0}
+.card{background:white;padding:21px;border-radius:12px;
+border:1px solid #e7ecf3}
+.card p{color:#77849a;font-size:13px}
+.card h2{font-size:28px;margin-top:12px;color:#1c3e70}
+.panel{background:white;padding:23px;border-radius:12px;
+border:1px solid #e7ecf3;margin-bottom:20px}
+.panel h3{margin-bottom:18px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:14px 9px;border-bottom:1px solid #edf0f5}
+th{color:#75839a;background:#f8faff}
+.status{padding:5px 9px;border-radius:15px;font-size:11px;
+background:#fff2d9;color:#9a6800}
+.approved{background:#e2f6e9;color:#167442}
+.rejected{background:#ffe7e7;color:#ba3434}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:13px;margin-bottom:7px}
+.full{grid-column:1/-1}
+.hidden{display:none}
+.bar{height:12px;background:#e9eef6;border-radius:10px;margin:10px 0}
+.bar span{display:block;height:100%;background:#397bd0;border-radius:10px}
+.role{max-width:170px}
+footer{text-align:center;color:#8491a6;padding:20px;font-size:12px}
+@media(max-width:850px){
+ .cards{grid-template-columns:repeat(2,1fr)}
+ aside{width:180px}
+}
+@media(max-width:600px){
+ .layout{display:block}aside{width:100%;padding:10px}
+ nav{display:flex;overflow-x:auto}
+ nav button{min-width:max-content;width:auto}
+ main{padding:18px}
+ .cards{grid-template-columns:1fr 1fr}
+ .formgrid{grid-template-columns:1fr}
+ .full{grid-column:auto}
+ header{padding:15px}
+}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="logo">Campus<span>Track</span></div>
+ <div>
+  <small>Achievement Management Portal</small>
+  <select class="role" id="role" onchange="changeRole()">
+   <option value="admin">Administrator</option>
+   <option value="mentor">Mentor</option>
+   <option value="student">Student</option>
+  </select>
+ </div>
+</header>
+
+<div class="layout">
+<aside>
+ <h4>MAIN MENU</h4>
+ <nav id="menu">
+  <button class="active" onclick="showPage('dashboard',this)">▦ Dashboard</button>
+  <button onclick="showPage('students',this)">♙ Students</button>
+  <button onclick="showPage('achievements',this)">★ Achievements</button>
+  <button onclick="showPage('submit',this)">＋ Submit Achievement</button>
+  <button onclick="showPage('verify',this)">✓ Verification</button>
+  <button onclick="showPage('performance',this)">▤ Performance</button>
+  <button onclick="showPage('reports',this)">▧ Reports</button>
+ </nav>
+</aside>
+
+<main>
+
+<section id="dashboard">
+ <h1 id="welcome">Administrator Dashboard</h1>
+ <p class="sub">Welcome to your centralized student achievement monitoring system.</p>
+
+ <div class="cards">
+  <div class="card"><p>Total Students</p><h2 id="studentCount">250</h2></div>
+  <div class="card"><p>Total Mentors</p><h2>25</h2></div>
+  <div class="card"><p>Achievements</p><h2 id="achievementCount">128</h2></div>
+  <div class="card"><p>Pending Verification</p><h2 id="pendingCount">12</h2></div>
+ </div>
+
+ <div class="panel">
+  <h3>Achievement Categories</h3>
+  <p>Technical Events</p><div class="bar"><span style="width:85%"></span></div>
+  <p>Sports</p><div class="bar"><span style="width:65%"></span></div>
+  <p>Cultural Activities</p><div class="bar"><span style="width:55%"></span></div>
+  <p>Academic Achievements</p><div class="bar"><span style="width:75%"></span></div>
+ </div>
+
+ <div class="panel">
+  <h3>Recent Achievement Submissions</h3>
+  <div id="recent"></div>
+ </div>
+</section>
+
+<section id="students" class="hidden">
+ <h1>Student Management</h1>
+ <p class="sub">Monitor student records and mentor assignments.</p>
+ <div class="panel">
+  <h3>Student Directory</h3>
+  <table>
+   <tr><th>Student</th><th>Department</th><th>Mentor</th><th>Status</th></tr>
+   <tr><td>Rahul Kumar</td><td>Mechanical</td><td>Prof. Anand</td><td>Active</td></tr>
+   <tr><td>Priya Sharma</td><td>Computer Science</td><td>Prof. Meena</td><td>Active</td></tr>
+   <tr><td>Arun Raj</td><td>Electronics</td><td>Prof. Ravi</td><td>Active</td></tr>
+  </table>
+ </div>
+</section>
+
+<section id="achievements" class="hidden">
+ <h1>Achievement Records</h1>
+ <p class="sub">View all student achievement submissions.</p>
+ <div class="panel" id="achievementList"></div>
+</section>
+
+<section id="submit" class="hidden">
+ <h1>Submit Achievement</h1>
+ <p class="sub">Enter your achievement details for mentor verification.</p>
+ <div class="panel">
+  <form id="achievementForm">
+   <div class="formgrid">
+    <div class="field">
+     <label>Student Name</label>
+     <input id="studentName" required placeholder="Enter student name">
+    </div>
+    <div class="field">
+     <label>Register Number</label>
+     <input id="registerNo" required placeholder="Enter register number">
+    </div>
+    <div class="field">
+     <label>Achievement Category</label>
+     <select id="category">
+      <option>Technical</option><option>Sports</option>
+      <option>Cultural</option><option>Academic</option>
+      <option>Research</option><option>Other</option>
+     </select>
+    </div>
+    <div class="field">
+     <label>Event Date</label>
+     <input type="date" id="eventDate" required>
+    </div>
+    <div class="field full">
+     <label>Achievement / Event Name</label>
+     <input id="eventName" required placeholder="Enter event name">
+    </div>
+    <div class="field full">
+     <label>Description</label>
+     <textarea id="description" rows="4" placeholder="Describe your achievement"></textarea>
+    </div>
+    <div class="field full">
+     <label>Certificate / Proof (demo file selection)</label>
+     <input type="file" id="certificate" accept=".pdf,.jpg,.jpeg,.png">
+    </div>
+   </div>
+   <button class="primary" type="submit">Submit for Verification</button>
+  </form>
+ </div>
+</section>
+
+<section id="verify" class="hidden">
+ <h1>Achievement Verification</h1>
+ <p class="sub">Review submitted achievements and update their verification status.</p>
+ <div class="panel" id="verificationList"></div>
+</section>
+
+<section id="performance" class="hidden">
+ <h1>Performance Evaluation</h1>
+ <p class="sub">Track student progress and achievement points.</p>
+ <div class="cards">
+  <div class="card"><p>Technical Points</p><h2>85</h2></div>
+  <div class="card"><p>Sports Points</p><h2>65</h2></div>
+  <div class="card"><p>Academic Points</p><h2>90</h2></div>
+  <div class="card"><p>Overall Score</p><h2>80%</h2></div>
+ </div>
+ <div class="panel">
+  <h3>Performance Summary</h3>
+  <p>Technical Skills</p><div class="bar"><span style="width:85%"></span></div>
+  <p>Academic Performance</p><div class="bar"><span style="width:90%"></span></div>
+  <p>Sports Participation</p><div class="bar"><span style="width:65%"></span></div>
+  <p>Cultural Activities</p><div class="bar"><span style="width:70%"></span></div>
+ </div>
+</section>
+
+<section id="reports" class="hidden">
+ <h1>Reports and Analytics</h1>
+ <p class="sub">Institution-level achievement overview.</p>
+ <div class="panel">
+  <h3>Institutional Summary</h3>
+  <p>Total registered students: 250</p><br>
+  <p>Total mentors: 25</p><br>
+  <p>Achievements recorded: <span id="reportCount">128</span></p><br>
+  <p>Pending verification: <span id="reportPending">12</span></p><br>
+  <button class="primary" onclick="window.print()">Print Report</button>
+ </div>
+</section>
+
+</main>
+</div>
+<footer>CampusTrack | Centralized Mentor-Based Student Achievement System</footer>
+
+<script>
+let records = [
+ {name:"Rahul Kumar",event:"National Technical Symposium",
+ category:"Technical",date:"2026-10-15",status:"Pending"},
+ {name:"Priya Sharma",event:"State Level Sports Meet",
+ category:"Sports",date:"2026-10-18",status:"Approved"},
+ {name:"Arun Raj",event:"Paper Presentation",
+ category:"Academic",date:"2026-10-20",status:"Pending"}
+];
+
+function showPage(id,btn){
+ document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+ render();
+}
+
+function changeRole(){
+ let role=document.getElementById("role").value;
+ document.getElementById("welcome").textContent=
+ role==="admin"?"Administrator Dashboard":
+ role==="mentor"?"Mentor Dashboard":"Student Dashboard";
+ document.querySelectorAll("nav button").forEach(b=>b.style.display="block");
+ if(role==="student"){
+  document.querySelectorAll("nav button").forEach((b,i)=>{
+   b.style.display=[0,2,3,5].includes(i)?"block":"none";
+  });
+ }else if(role==="mentor"){
+  document.querySelectorAll("nav button").forEach((b,i)=>{
+   b.style.display=[0,1,2,4,5,6].includes(i)?"block":"none";
+  });
+ }
+ showPage("dashboard",document.querySelector("nav button"));
+}
+
+function render(){
+ let rows=records.map((r,i)=>`
+ <tr><td>${safe(r.name)}</td><td>${safe(r.event)}</td>
+ <td>${safe(r.category)}</td><td>${safe(r.date)}</td>
+ <td><span class="status ${r.status.toLowerCase()}">${r.status}</span></td></tr>`).join("");
+ let table=`<table><tr><th>Student</th><th>Achievement</th><th>Category</th><th>Date</th><th>Status</th></tr>${rows}</table>`;
+ document.getElementById("recent").innerHTML=table;
+ document.getElementById("achievementList").innerHTML=table;
+ document.getElementById("verificationList").innerHTML=`
+ <table><tr><th>Student</th><th>Achievement</th><th>Status</th><th>Action</th></tr>
+ ${records.map((r,i)=>`<tr><td>${safe(r.name)}</td>
+ <td>${safe(r.event)}</td><td>${r.status}</td>
+ <td>${r.status==="Pending"?`<button class="primary" onclick="verify(${i},'Approved')">Approve</button>
+ <button class="primary" style="background:#c74747" onclick="verify(${i},'Rejected')">Reject</button>`:"Completed"}</td></tr>`).join("")}
+ </table>`;
+ let pending=records.filter(r=>r.status==="Pending").length;
+ document.getElementById("achievementCount").textContent=128+records.length-3;
+ document.getElementById("pendingCount").textContent=pending;
+ document.getElementById("reportCount").textContent=128+records.length-3;
+ document.getElementById("reportPending").textContent=pending;
+}
+
+function verify(i,status){
+ records[i].status=status;
+ render();
+}
+
+function safe(value){
+ return String(value).replace(/[&<>"']/g,c=>({
+ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+ })[c]);
+}
+
+document.getElementById("achievementForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ records.unshift({
+ name:document.getElementById("studentName").value,
+ event:document.getElementById("eventName").value,
+ category:document.getElementById("category").value,
+ date:document.getElementById("eventDate").value,
+ status:"Pending"
+ });
+ alert("Achievement submitted successfully for mentor verification!");
+ this.reset();
+ showPage("achievements",document.querySelectorAll("nav button")[2]);
+});
+
+render();
+</script>
+</body>
+</html>
